@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Discord.WebSocket;
 using OpenAI;
 
 namespace Codey
@@ -15,23 +11,19 @@ namespace Codey
     {
         private readonly OpenAIAPI _openAI;
 
-        private readonly string _prompt;
-
         private readonly CompletionRequestBuilder requestTemplate;
 
         private readonly EmbedBuilder LogMessage;
+
+        private readonly Resources _resources;
 
         public Interpreter()
         {
             // Initialize the OpenAI API
             _openAI = new OpenAIAPI(Environment.GetEnvironmentVariable("OpenAIToken"), Engine.Ada);
 
-            // Get our preset promptt
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Codey.TrainingPrompt.txt"))
-            using (var reader = new StreamReader(stream))
-            {
-                _prompt = $"{reader.ReadToEnd()}\nQ:";
-            }
+            // Set up our embedded resources
+            _resources = new Resources();
 
             // Set up our CompletionRequestBuilder template
             requestTemplate = new CompletionRequestBuilder()
@@ -56,7 +48,7 @@ namespace Codey
 
             // Create our request
             var request = requestTemplate
-                .WithPrompt($"{_prompt} {rawInput}\n")
+                .WithPrompt($"{_resources.TrainingPrompt} {rawInput}\n")
                 .Build();
 
             // Get the response from OpenAI and clean it up
@@ -90,13 +82,15 @@ namespace Codey
                 .WithDescription($"Command: {command}\n\nFirst input: {firstInput}\n\nSecond input: {(secondInput == "" ? "None" : secondInput)}")
                 .Build());
 
-            await context.Channel.SendMessageAsync(await DoCommand(new BotCommand
+            var result = await DoCommand(new BotCommand
             {
                 Name = command,
                 FirstInput = firstInput,
                 SecondInput = secondInput,
                 Context = context
-            }));
+            });
+
+            await context.Channel.SendMessageAsync(result.Contains("I was unable to complete the task. I need some refining") ? result : $"{_resources.GetRandomSuccess()} {result}");
         }
 
         public async Task<string> DoCommand(BotCommand command)
@@ -113,7 +107,7 @@ namespace Codey
                     return await command.ChangeRoleColor();
 
                 case "make-text-channel":
-                    return await command.MakeTextChannel();
+                    return await command.MakeTextChannel(_resources);
 
                 case "list-roles":
                     return command.ListAllRoles();
@@ -128,11 +122,14 @@ namespace Codey
                 case "take-user-role":
                     return await command.RemoveRole();
 
+                case "get-avatar":
+                    return command.GetAvatar();
+
                 default:
                     break;
             }
 
-            return "Sorry, I was unable to complete the task. I need some refining.";
+            return $"{_resources.GetRandomApology()}, I was unable to complete the task. I need some refining.";
         }
     }
 }

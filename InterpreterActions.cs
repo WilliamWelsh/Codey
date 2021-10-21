@@ -1,7 +1,5 @@
 using System.Linq;
-using Discord.WebSocket;
 using System.Threading.Tasks;
-using System;
 
 namespace Codey
 {
@@ -34,9 +32,10 @@ namespace Codey
         public static string ListAllRoles(this BotCommand command)
         => $"Here are all the roles we have:\n{command.Context.Guild.Roles.Aggregate("", (a, b) => a + b.Mention + ", ")}".Replace("@everyone", "everyone");
 
-        public static async Task<string> MakeTextChannel(this BotCommand command)
+        public static async Task<string> MakeTextChannel(this BotCommand command, Resources resources)
         {
             var channel = await command.Context.Guild.CreateTextChannelAsync(command.FirstInput);
+            await channel.SendMessageAsync(resources.GetRandomNewChannelMessage());
             return $"I made a new text channel: {channel.Mention}";
         }
 
@@ -76,6 +75,14 @@ namespace Codey
             // Give the role to the user
             await target.RemoveRoleAsync(role);
             return $"I removed the {role.Name} role from {target.Mention}.";
+        }
+
+        public static string GetAvatar(this BotCommand command)
+        {
+            var target = command.GetUserFromString();
+            if (target == null)
+                return $"I couldn't find anyone named {command.FirstInput}.";
+            return $"Here's {target.Mention}'s avatar: {target.GetAvatarUrl() ?? target.GetDefaultAvatarUrl()}";
         }
     }
 }

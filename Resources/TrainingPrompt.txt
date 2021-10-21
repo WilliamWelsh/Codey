@@ -56,3 +56,11 @@ Q: remove reverse's spacex role
 A: take-user-role `reverse` spacex
 Q: remove my potato role
 A: take-user-role `me` potato
+Q: make a video games role
+A: make-role `video games`
+Q: can you get me my avatar url?
+A: get-avatar `me`
+Q: can you get my profile picture
+A: get-avatar `me`
+Q: can you get professor zoom's avatar
+A: get-avatar `professor zoom`

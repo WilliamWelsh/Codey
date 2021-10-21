@@ -3,12 +3,35 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
+
   <ItemGroup>
-    <None Remove="TrainingPrompt.txt" />
+    <None Remove="Resources/TrainingPrompt.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="TrainingPrompt.txt" />
+    <EmbeddedResource Include="Resources/TrainingPrompt.txt" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources/Apologies.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/Apologies.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources/Successes.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/Successes.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources/NewChannelMessages.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/NewChannelMessages.txt" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Discord.Net.Labs" Version="3.1.7" />
     <PackageReference Include="OpenAI.Net" Version="1.0.1" />
