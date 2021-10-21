@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="TrainingPrompt.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TrainingPrompt.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Discord.Net.Labs" Version="3.1.7" />
+    <PackageReference Include="OpenAI.Net" Version="1.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0-rc.2.21480.5" />
+  </ItemGroup>
+</Project>

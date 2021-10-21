@@ -1,0 +1,58 @@
+Q: Make a new role called Potato
+A: make-role `Potato`
+Q: Make the potato role blue
+A: change-role-color `potato` blue
+Q: Delete the Moderator role
+A: delete-role `Moderator`
+Q: Make a role called William and make it red
+A: make-role-with-color `William` red
+Q: Give Andy the William role
+A: give-user-role `Andy` William
+Q: make a new role called Robot and make it yellow
+A: make-role-with-color `Robot` yellow
+Q: can u make a new role and call it Im The Boss
+A: make-role `Im The Boss`
+Q: do a new role and name it lol lol lol
+A: make-role `lol lol lol`
+Q: make the Bots role white
+A: change-role-color `Bots` white
+Q: make another role called Noobs and make it blue
+A: make-role-with-color `Noobs` blue
+Q: do another role called Gold Member and make it gold
+A: make-role-with-color `Gold Member` gold
+Q: Make a text channel called general
+A: make-text-channel `general
+Q: Make a new text channel and name it awesome channel
+A: make-text-channel `awesome channel`
+Q: nice, now make another text channel and call it roblox
+A: make-text-channel `roblox`
+Q: List all the roles we have
+A: list-roles
+Q: What are the roles we have?
+A: list-roles
+Q: Thank you!
+A: No problem. I'm happy to help
+Q: make a role called Administrator and make it red
+A: make-role-with-color `Administrator` red
+Q: Make a role called Tesla
+A: make-role `Tesla`
+Q: can you please make a green role with the name SpaceX?
+A: make-role-with-color `SpaceX` green
+Q: can you please make a red role with the name: Tesla?
+A: make-role-with-color `Tesla` red
+Q: give me the tesla role
+A: give-user-role `me` tesla
+Q: can you give me the potato role
+A: give-user-role `me` potato
+Q: now give professor zoom the spacex role
+A: give-user-role `professor zoom` spacex
+Q: give me the bots role
+A: give-user-role `me` bots
+Q: remove my bots role
+A: take-user-role `me` bots
+Q: remove the tesla role from professor zoom
+A: take-user-role `professor zoom` tesla
+Q: remove reverse's spacex role
+A: take-user-role `reverse` spacex
+Q: remove my potato role
+A: take-user-role `me` potato
