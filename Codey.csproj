@@ -5,10 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources/TrainingPrompt.txt" />
+    <None Remove="Resources/CommandPrompt.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources/TrainingPrompt.txt" />
+    <EmbeddedResource Include="Resources/CommandPrompt.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources/ChannelEmojiPrompt.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/ChannelEmojiPrompt.txt" />
   </ItemGroup>
 
   <ItemGroup>

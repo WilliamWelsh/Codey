@@ -9,13 +9,17 @@ namespace Codey
 {
     public class Interpreter
     {
-        private readonly OpenAIAPI _openAI;
+        public readonly OpenAIAPI _openAI;
 
-        private readonly CompletionRequestBuilder requestTemplate;
+        public readonly CompletionRequestBuilder commandRequestTemplate;
 
-        private readonly EmbedBuilder LogMessage;
+        public readonly CompletionRequestBuilder channelToEmojiTemplate;
 
-        private readonly Resources _resources;
+        public readonly EmbedBuilder LogMessage;
+
+        public readonly Resources _resources;
+
+        private const bool LOG_MESSAGES = false;
 
         public Interpreter()
         {
@@ -25,10 +29,19 @@ namespace Codey
             // Set up our embedded resources
             _resources = new Resources();
 
-            // Set up our CompletionRequestBuilder template
-            requestTemplate = new CompletionRequestBuilder()
+            // Set up our CompletionRequestBuilder template for the commands
+            commandRequestTemplate = new CompletionRequestBuilder()
                 .WithTemperature(0)
                 .WithMaxTokens(100)
+                .WithTopP(1)
+                .WithFrequencyPenalty(0)
+                .WithPresencePenalty(0)
+                .WithStop(new List<string> { "\n" });
+
+            // Set up our CompletionRequestBuilder template to convert channel names to emojis
+            channelToEmojiTemplate = new CompletionRequestBuilder()
+                .WithTemperature(0)
+                .WithMaxTokens(6)
                 .WithTopP(1)
                 .WithFrequencyPenalty(0)
                 .WithPresencePenalty(0)
@@ -47,11 +60,12 @@ namespace Codey
             Console.WriteLine(rawInput);
 
             // Create our request
-            var request = requestTemplate
-                .WithPrompt($"{_resources.TrainingPrompt} {rawInput}\n")
+            var request = commandRequestTemplate
+                .WithPrompt($"{_resources.CommandPrompt} {rawInput}\n")
                 .Build();
 
             // Get the response from OpenAI and clean it up
+            _openAI.UsingEngine = Engine.Ada;
             var response = (await _openAI.Completions.CreateCompletionAsync(request)).ToString().Replace("A: ", "");
 
             // Get the command
@@ -75,12 +89,13 @@ namespace Codey
             if (response.Contains("` "))
                 secondInput = response.Substring(response.LastIndexOf("` ") + 2);
 
-            await context.Channel.SendMessageAsync(null, false, LogMessage
-                .WithAuthor(new EmbedAuthorBuilder()
-                    .WithName(context.User.ToString())
-                    .WithIconUrl(context.User.GetAvatarUrl() ?? context.User.GetDefaultAvatarUrl()))
-                .WithDescription($"Command: {command}\n\nFirst input: {firstInput}\n\nSecond input: {(secondInput == "" ? "None" : secondInput)}")
-                .Build());
+            if (LOG_MESSAGES)
+                await context.Channel.SendMessageAsync(null, false, LogMessage
+                    .WithAuthor(new EmbedAuthorBuilder()
+                        .WithName(context.User.ToString())
+                        .WithIconUrl(context.User.GetAvatarUrl() ?? context.User.GetDefaultAvatarUrl()))
+                    .WithDescription($"Command: {command}\n\nFirst input: {firstInput}\n\nSecond input: {(secondInput == "" ? "None" : secondInput)}")
+                    .Build());
 
             var result = await DoCommand(new BotCommand
             {
@@ -90,10 +105,13 @@ namespace Codey
                 Context = context
             });
 
-            await context.Channel.SendMessageAsync(result.Contains("I was unable to complete the task. I need some refining") ? result : $"{_resources.GetRandomSuccess()} {result}");
+            if (result.wasSuccessful)
+                await context.Message.ReplyAsync($"{_resources.GetRandomSuccess()} {result.Text}");
+            else
+                await context.Message.ReplyAsync($"{_resources.GetRandomApology()}, I was unable to complete the task. I need some refining.");
         }
 
-        public async Task<string> DoCommand(BotCommand command)
+        public async Task<CommandResult> DoCommand(BotCommand command)
         {
             switch (command.Name)
             {
@@ -125,11 +143,17 @@ namespace Codey
                 case "get-avatar":
                     return command.GetAvatar();
 
+                case "give-every-text-channel-emoji":
+                    return await command.GiveEveryTextChannelAnEmoji(this);
+
+                case "give-text-channel-emoji":
+                    return await command.GiveTextChannelAnEmoji(this);
+
                 default:
                     break;
             }
 
-            return $"{_resources.GetRandomApology()}, I was unable to complete the task. I need some refining.";
+            return new CommandResult();
         }
     }
 }

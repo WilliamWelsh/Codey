@@ -25,11 +25,15 @@ namespace Codey
         {
             SocketGuildUser user = null;
 
-            // Target is self
+            // Target might be the user that did the command
             if (command.FirstInput == "me")
                 user = (SocketGuildUser)command.Context.User;
 
-            // Target is a string (username)
+            // Target might be Codey
+            if (command.FirstInput == "self")
+                user = command.Context.Guild.Users.Where(x => x.Id == 900493627623604234).First();
+
+            // Target might be a string (username)
             if (user == null)
             {
                 var possibleUsers = command.Context.Guild.Users.Where(x => x.Username.ToLower() == command.FirstInput.ToLower());

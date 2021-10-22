@@ -38,10 +38,10 @@ Q: Make a role called Tesla
 A: make-role `Tesla`
 Q: can you please make a green role with the name SpaceX?
 A: make-role-with-color `SpaceX` green
-Q: can you please make a red role with the name: Tesla?
-A: make-role-with-color `Tesla` red
-Q: give me the tesla role
-A: give-user-role `me` tesla
+Q: can you please make a red role with the name: Nolan?
+A: make-role-with-color `Nolan` red
+Q: give me the gamer role
+A: give-user-role `me` gamer
 Q: can you give me the potato role
 A: give-user-role `me` potato
 Q: now give professor zoom the spacex role
@@ -50,8 +50,8 @@ Q: give me the bots role
 A: give-user-role `me` bots
 Q: remove my bots role
 A: take-user-role `me` bots
-Q: remove the tesla role from professor zoom
-A: take-user-role `professor zoom` tesla
+Q: remove the mod role from professor zoom
+A: take-user-role `professor zoom` mod
 Q: remove reverse's spacex role
 A: take-user-role `reverse` spacex
 Q: remove my potato role
@@ -64,3 +64,17 @@ Q: can you get my profile picture
 A: get-avatar `me`
 Q: can you get professor zoom's avatar
 A: get-avatar `professor zoom`
+Q: make a red role called superpowers.
+A: make-role-with-color `superpowers` red
+Q: give yourself a role and make it orange
+A: give-user-role `self` orange
+Q: download my profile picture
+A: get-avatar `me`
+Q: hey codey make me a apple role
+A: make-role `apple`
+Q: give every text channel an emoji
+A: give-every-text-channel-emoji
+Q: could you please make a channel for admins?
+A: make-text-channel `admin`
+Q: give the general channel an emoji
+A: give-text-channel-emoji `general`
