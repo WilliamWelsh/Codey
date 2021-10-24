@@ -77,3 +77,8 @@ callouts:🚨
 chatroom:💬
 video-games:🎮
 admin-chat:🦄
+issues-pr:🚨
+commit:🤖
+memories:🧠
+snippets:✂️
+among-us:👽

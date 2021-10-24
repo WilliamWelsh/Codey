@@ -17,22 +17,17 @@ namespace Codey
 
         public readonly List<string> NewChannelMessages;
 
+        public readonly string RulesTemplate;
+
         private readonly Random random;
 
         public Resources()
         {
-            // Get our preset prompts
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Codey.Resources.CommandPrompt.txt"))
-            using (var reader = new StreamReader(stream))
-            {
-                CommandPrompt = $"{reader.ReadToEnd()}\nQ:";
-            }
+            CommandPrompt = ReadResourcesIntoString("CommandPrompt");
 
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Codey.Resources.ChannelEmojiPrompt.txt"))
-            using (var reader = new StreamReader(stream))
-            {
-                ChannelEmojiPrompt = $"{reader.ReadToEnd()}\nQ:";
-            }
+            ChannelEmojiPrompt = ReadResourcesIntoString("ChannelEmojiPrompt");
+
+            RulesTemplate = ReadResourcesIntoString("RulesTemplate", false);
 
             Apologies = ReadResourceIntoList("Apologies");
 
@@ -48,6 +43,15 @@ namespace Codey
         public string GetRandomSuccess() => Successes[random.Next(Successes.Count)];
 
         public string GetRandomNewChannelMessage() => NewChannelMessages[random.Next(NewChannelMessages.Count)];
+
+        private string ReadResourcesIntoString(string fileName, bool appendQuestionForPrompt = true)
+        {
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Codey.Resources.{fileName}.txt"))
+            using (var reader = new StreamReader(stream))
+            {
+                return $"{reader.ReadToEnd()}{(appendQuestionForPrompt ? "\nQ:" : "")}";
+            }
+        }
 
         private List<string> ReadResourceIntoList(string fileName)
         {

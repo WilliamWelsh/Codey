@@ -19,7 +19,7 @@ namespace Codey
 
         public readonly Resources _resources;
 
-        private const bool LOG_MESSAGES = false;
+        private const bool LOG_MESSAGES = true;
 
         public Interpreter()
         {
@@ -108,7 +108,7 @@ namespace Codey
             if (result.wasSuccessful)
                 await context.Message.ReplyAsync($"{_resources.GetRandomSuccess()} {result.Text}");
             else
-                await context.Message.ReplyAsync($"{_resources.GetRandomApology()}, I was unable to complete the task. I need some refining.");
+                await context.Message.ReplyAsync($"{_resources.GetRandomApology()}, {result.Text}");
         }
 
         public async Task<CommandResult> DoCommand(BotCommand command)

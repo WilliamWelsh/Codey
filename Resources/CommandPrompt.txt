@@ -23,7 +23,7 @@ A: make-role-with-color `Gold Member` gold
 Q: Make a text channel called general
 A: make-text-channel `general
 Q: Make a new text channel and name it awesome channel
-A: make-text-channel `awesome channel`
+A: make-text-channel `awesome-channel`
 Q: nice, now make another text channel and call it roblox
 A: make-text-channel `roblox`
 Q: List all the roles we have
@@ -78,3 +78,9 @@ Q: could you please make a channel for admins?
 A: make-text-channel `admin`
 Q: give the general channel an emoji
 A: give-text-channel-emoji `general`
+Q: make the superhero role green
+A: change-role-color `superhero` green
+Q: give yourself the gauntlet role
+A: give-user-role `self` gauntlet
+Q: make a channel for looking to play
+A: make-text-channel `looking-to-play`

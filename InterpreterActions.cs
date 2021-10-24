@@ -19,7 +19,7 @@ namespace Codey
         {
             var roleToDelete = command.GetRoleFromString();
             if (roleToDelete == null)
-                return new CommandResult($"I couldn't find a role named `{command.FirstInput}`.", false);
+                return new CommandResult($"I couldn't find a role named {command.FirstInput}.", false);
             await roleToDelete.DeleteAsync();
             return new CommandResult($"I deleted the {roleToDelete.Name} role");
         }
@@ -28,7 +28,7 @@ namespace Codey
         {
             var role = command.GetRoleFromString();
             if (role == null)
-                return new CommandResult($"I couldn't find a role named `{command.FirstInput}`.", false);
+                return new CommandResult($"I couldn't find a role named {command.FirstInput}.", false);
             await role.ModifyAsync(r => r.Color = Colors.GetColorFromString(command.SecondInput));
             return new CommandResult($"I changed the {role.Name}'s role color to {command.SecondInput}");
         }
@@ -39,7 +39,15 @@ namespace Codey
         public static async Task<CommandResult> MakeTextChannel(this BotCommand command, Resources resources)
         {
             var channel = await command.Context.Guild.CreateTextChannelAsync(command.FirstInput);
-            await channel.SendMessageAsync(resources.GetRandomNewChannelMessage());
+
+            // If it's a rule channel, put some template rules for them
+            if (channel.Name.Contains("rules"))
+            {
+                await channel.SendMessageAsync(resources.RulesTemplate.Replace("{DISCORD_NAME}", command.Context.Guild.Name));
+                await channel.SendMessageAsync($"There's some template rules to get you started 😊 {command.Context.User.Mention}");
+            }
+            else
+                await channel.SendMessageAsync(resources.GetRandomNewChannelMessage());
             return new CommandResult($"I made a new text channel: {channel.Mention}");
         }
 
@@ -53,7 +61,7 @@ namespace Codey
         {
             var role = command.GetRoleFromSecondString();
             if (role == null)
-                return new CommandResult($"I couldn't find a role named `{command.SecondInput}`.", false);
+                return new CommandResult($"I couldn't find a role named {command.SecondInput}.", false);
 
             var target = command.GetUserFromString();
 
@@ -69,7 +77,7 @@ namespace Codey
         {
             var role = command.GetRoleFromSecondString();
             if (role == null)
-                return new CommandResult($"I couldn't find a role named `{command.SecondInput}`.", false);
+                return new CommandResult($"I couldn't find a role named {command.SecondInput}.", false);
 
             var target = command.GetUserFromString();
 
@@ -91,24 +99,40 @@ namespace Codey
 
         public static async Task<CommandResult> GiveTextChannelAnEmoji(this BotCommand command, Interpreter interpreter)
         {
+            await command.Context.Channel.SendMessageAsync($"Sure. Please give me a moment...");
+
             var r = new Regex(interpreter._resources.EmojiPattern);
 
             // Change the engine to babbage
             interpreter._openAI.UsingEngine = Engine.Babbage;
 
-            await command.Context.Channel.SendMessageAsync($"Sure. Please give me a moment...");
+            // Try to find the channel
+            var channel = command.Context.Guild.TextChannels.Where(c => c.Name.Contains(command.FirstInput.ToLower().Replace(" ", "-"))).First();
+            if (channel == null)
+                return new CommandResult($"I couldn't find a text channel named {command.FirstInput}.", false);
 
+            // Check if it has an emoji already
+            if (r.IsMatch(channel.Name))
+                return new CommandResult($"That channel already has an emoji.", false);
 
+            // Give the channel an emoji
+            var emoji = (await interpreter._openAI.Completions.CreateCompletionAsync(interpreter.channelToEmojiTemplate
+                .WithPrompt($"{interpreter._resources.ChannelEmojiPrompt}\n{channel.Name}:")
+                .Build()));
+            var channelName = channel.Name;
+            await channel.ModifyAsync(c => c.Name = $"{emoji}┃{channelName}");
+
+            return new CommandResult($"I gave {channel.Mention} an emoji.");
         }
 
         public static async Task<CommandResult> GiveEveryTextChannelAnEmoji(this BotCommand command, Interpreter interpreter)
         {
+            await command.Context.Channel.SendMessageAsync($"Sure. Please give me a moment...");
+
             var r = new Regex(interpreter._resources.EmojiPattern);
 
             // Change the engine to babbage
             interpreter._openAI.UsingEngine = Engine.Babbage;
-
-            await command.Context.Channel.SendMessageAsync($"Sure. Please give me a moment...");
 
             foreach (var channel in command.Context.Guild.TextChannels)
             {
@@ -118,8 +142,7 @@ namespace Codey
 
                 var emoji = (await interpreter._openAI.Completions.CreateCompletionAsync(interpreter.channelToEmojiTemplate
                     .WithPrompt($"{interpreter._resources.ChannelEmojiPrompt}\n{channel.Name}:")
-                    .Build()))
-                .ToString().Replace("-q", ""); // No idea why it puts "-q" sometimes but oh well!
+                    .Build()));
                 var channelName = channel.Name;
                 await channel.ModifyAsync(c => c.Name = $"{emoji}┃{channelName}");
                 Thread.Sleep(2000);
